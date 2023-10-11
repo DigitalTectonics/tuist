@@ -1,6 +1,7 @@
 import Foundation
 import TSCBasic
 
+
 public enum GraphDependency: Hashable, CustomStringConvertible, Comparable, Codable {
     /// A dependency that represents a pre-compiled .xcframework.
     case xcframework(

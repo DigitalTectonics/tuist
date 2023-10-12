@@ -8,14 +8,14 @@ public enum GraphDependencyReference: Equatable, Comparable, Hashable {
         infoPlist: XCFrameworkInfoPlist,
         primaryBinaryPath: AbsolutePath,
         binaryPath: AbsolutePath,
-        platformFilters: PlatformFilters
+        platformFilters: PlatformFilters = []
     )
     case library(
         path: AbsolutePath,
         linking: BinaryLinking,
         architectures: [BinaryArchitecture],
         product: Product,
-        platformFilters: PlatformFilters
+        platformFilters: PlatformFilters = []
     )
     case framework(
         path: AbsolutePath,
@@ -26,11 +26,11 @@ public enum GraphDependencyReference: Equatable, Comparable, Hashable {
         linking: BinaryLinking,
         architectures: [BinaryArchitecture],
         product: Product,
-        platformFilters: PlatformFilters
+        platformFilters: PlatformFilters = []
     )
-    case bundle(path: AbsolutePath, platformFilters: PlatformFilters)
+    case bundle(path: AbsolutePath, platformFilters: PlatformFilters = [])
     case product(target: String, productName: String, platformFilters: PlatformFilters = [])
-    case sdk(path: AbsolutePath, status: SDKStatus, source: SDKSource, platformFilters: PlatformFilters)
+    case sdk(path: AbsolutePath, status: SDKStatus, source: SDKSource, platformFilters: PlatformFilters = [])
 
     init(_ dependency: GraphDependency, filters: PlatformFilters = []) {
         switch dependency {

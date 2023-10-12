@@ -4149,7 +4149,7 @@ final class GraphTraverserTests: TuistUnitTestCase {
 
     private func sdkDependency(from dependency: GraphDependencyReference) -> SDKPathAndStatus? {
         switch dependency {
-        case let .sdk(path, status, _):
+        case let .sdk(path, status, _, _):
             return SDKPathAndStatus(name: path.basename, status: status)
         default:
             return nil

@@ -152,7 +152,7 @@ public class GraphTraverser: GraphTraversing {
             test: isDependencyResourceBundle,
             skip: canHostResources
         )
-        return Set(bundles.compactMap(dependencyReference))
+        return Set(bundles.compactMap({ dependencyReference(to: $0, from: .target(name: name, path: path))}))
     }
 
     public func target(from dependency: GraphDependency) -> GraphTarget? {
@@ -254,7 +254,7 @@ public class GraphTraverser: GraphTraversing {
         if target.target.mergedBinaryType != .disabled {
             otherTargetFrameworks = otherTargetFrameworks.filter(isDependencyDynamicNonMergeableTarget)
         }
-        references.formUnion(otherTargetFrameworks.lazy.compactMap(dependencyReference))
+        references.formUnion(otherTargetFrameworks.lazy.compactMap({ self.dependencyReference(to: $0, from: .target(name: name, path: path))}))
 
         // Exclude any products embed in unit test host apps
         if target.target.product == .unitTests {
@@ -336,7 +336,7 @@ public class GraphTraverser: GraphTraversing {
 
         let precompiledLibrariesAndFrameworks = Set(precompiled + precompiledDependencies)
             .filter(isDependencyPrecompiledDynamicAndLinkable)
-            .compactMap(dependencyReference)
+            .compactMap({ dependencyReference(to: $0, from: targetGraphDependency)})
 
         references.formUnion(precompiledLibrariesAndFrameworks)
 
@@ -377,17 +377,17 @@ public class GraphTraverser: GraphTraversing {
 
             references.formUnion(
                 allDependencies
-                    .compactMap(dependencyReference)
+                    .compactMap({ dependencyReference(to: $0, from: targetGraphDependency)})
             )
             references.subtract(
-                hostApplicationStaticTargets.compactMap(dependencyReference)
+                hostApplicationStaticTargets.compactMap({ dependencyReference(to: $0, from: targetGraphDependency)})
             )
         }
 
         // Link dynamic libraries and frameworks
         let dynamicLibrariesAndFrameworks = graph.dependencies[.target(name: name, path: path), default: []]
             .filter(or(isDependencyDynamicLibrary, isDependencyFramework))
-            .compactMap(dependencyReference)
+            .compactMap({ dependencyReference(to: $0, from: targetGraphDependency)})
         references.formUnion(dynamicLibrariesAndFrameworks)
 
         return references
@@ -847,7 +847,7 @@ public class GraphTraverser: GraphTraversing {
             .flatMap { filterDependencies(from: $0) }
 
         return Set(precompiledStatic + precompiledDependencies)
-            .compactMap(dependencyReference(to: $0, from: .target(name: name, path: path))})
+            .compactMap({ dependencyReference(to: $0, from: .target(name: name, path: path))})
     }
 
     private func staticPrecompiledXCFrameworksDependencies(

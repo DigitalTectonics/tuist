@@ -224,25 +224,25 @@ extension ProjectAutomation.Target {
 
     private static func from(_ dependency: TuistGraph.TargetDependency) -> ProjectAutomation.TargetDependency {
         switch dependency {
-        case let .target(name):
+        case let .target(name, _):
             return .target(name: name)
-        case let .project(target, path):
+        case let .project(target, path, _):
             return .project(target: target, path: path.pathString)
-        case let .framework(path):
+        case let .framework(path, _):
             return .framework(path: path.pathString)
-        case let .xcframework(path):
+        case let .xcframework(path, _):
             return .xcframework(path: path.pathString)
-        case let .library(path, publicHeaders, swiftModuleMap):
+        case let .library(path, publicHeaders, swiftModuleMap, _):
             return .library(
                 path: path.pathString,
                 publicHeaders: publicHeaders.pathString,
                 swiftModuleMap: swiftModuleMap?.pathString
             )
-        case let .package(product):
+        case let .package(product, _):
             return .package(product: product)
-        case let .packagePlugin(product):
+        case let .packagePlugin(product, _):
             return .packagePlugin(product: product)
-        case let .sdk(name, status):
+        case let .sdk(name, status, _):
             let projectAutomationStatus: ProjectAutomation.SDKStatus
             switch status {
             case .optional:

@@ -60,7 +60,7 @@ public protocol CarthageInteracting {
     func install(
         dependenciesDirectory: AbsolutePath,
         dependencies: TuistGraph.CarthageDependencies,
-        platforms: Set<TuistGraph.Platform>,
+        platforms: Set<TuistGraph.PackagePlatform>,
         shouldUpdate: Bool
     ) throws -> TuistCore.DependenciesGraph
 
@@ -86,7 +86,7 @@ public final class CarthageInteractor: CarthageInteracting {
     public func install(
         dependenciesDirectory: AbsolutePath,
         dependencies: TuistGraph.CarthageDependencies,
-        platforms: Set<TuistGraph.Platform>,
+        platforms: Set<TuistGraph.PackagePlatform>,
         shouldUpdate: Bool
     ) throws -> TuistCore.DependenciesGraph {
         logger.info("Installing Carthage dependencies.", metadata: .subsection)

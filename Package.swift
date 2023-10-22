@@ -614,7 +614,8 @@ if includeTuistCloud {
                 "TuistSupportTesting",
                 "TuistCoreTesting",
                 "TuistGraphTesting",
-            ]
+            ],
+            swiftSettings: [.define("DISABLE_SOMETHING", .when(platforms: [.iOS], configuration: .release))]
         ),
     ])
 }

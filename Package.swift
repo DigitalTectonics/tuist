@@ -523,6 +523,7 @@ var targets: [Target] = [
         dependencies: mapDependenciesOfSourcesTargetDependentOnTuistCloud([
             .byName(name: "AnyCodable"),
             "TuistAsyncQueue",
+            "TuistAsyncQueue",
             "TuistCore",
             "TuistGraph",
             "TuistLoader",

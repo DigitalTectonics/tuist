@@ -40,7 +40,7 @@ extension DependenciesGraph {
     }
 
     public static func test(
-        externalDependencies: [Platform: [String: [TargetDependency]]] = [:],
+        externalDependencies: [String: [TargetDependency]] = [:],
         externalProjects: [AbsolutePath: Project] = [:]
     ) -> Self {
         .init(externalDependencies: externalDependencies, externalProjects: externalProjects)
@@ -52,9 +52,7 @@ extension DependenciesGraph {
         path: AbsolutePath = AbsolutePath.root.appending(try! RelativePath(validating: "Test.xcframework")),
         platforms: Set<Platform>
     ) -> DependenciesGraph {
-        let externalDependencies: [Platform: [String: [TargetDependency]]] = platforms.reduce(into: [:]) { result, platform in
-            result[platform] = [name: [.xcframework(path: path)]]
-        }
+        let externalDependencies = [name: [TargetDependency.xcframework(path: path)]]
 
         return .init(
             externalDependencies: externalDependencies,
@@ -66,16 +64,14 @@ extension DependenciesGraph {
         packageFolder: AbsolutePath,
         platforms: Set<Platform>
     ) -> Self {
-        let externalDependencies: [Platform: [String: [TargetDependency]]] = platforms.reduce(into: [:]) { result, platform in
-            result[platform] = [
-                "Tuist": [
-                    .project(
-                        target: self.resolveTargetName(targetName: "Tuist", for: platform, addSuffix: platforms.count != 1),
-                        path: packageFolder
-                    ),
-                ],
-            ]
-        }
+        let externalDependencies = [
+            "Tuist": [
+                TargetDependency.project(
+                    target: "Tuist",
+                    path: packageFolder
+                ),
+            ],
+        ]
 
         return .init(
             externalDependencies: externalDependencies,
@@ -87,16 +83,15 @@ extension DependenciesGraph {
         packageFolder: AbsolutePath,
         platforms: Set<Platform>
     ) -> Self {
-        let externalDependencies: [Platform: [String: [TargetDependency]]] = platforms.reduce(into: [:]) { result, platform in
-            result[platform] = [
-                "ALibrary": [
-                    .project(
-                        target: self.resolveTargetName(targetName: "ALibrary", for: platform, addSuffix: platforms.count != 1),
-                        path: packageFolder
-                    ),
-                ],
-            ]
-        }
+        let externalDependencies = [
+            "ALibrary": [
+                TargetDependency.project(
+                    target: "ALibrary",
+                    path: packageFolder
+                ),
+            ],
+        ]
+
 
         return .init(
             externalDependencies: externalDependencies,
@@ -108,17 +103,14 @@ extension DependenciesGraph {
         packageFolder: AbsolutePath,
         platforms: Set<Platform>
     ) -> Self {
-        let externalDependencies: [Platform: [String: [TargetDependency]]] = platforms.reduce(into: [:]) { result, platform in
-            result[platform] = [
-                "AnotherLibrary": [
-                    .project(
-                        target: self
-                            .resolveTargetName(targetName: "AnotherLibrary", for: platform, addSuffix: platforms.count != 1),
-                        path: packageFolder
-                    ),
-                ],
-            ]
-        }
+        let externalDependencies = [
+            "AnotherLibrary": [
+                TargetDependency.project(
+                    target: "AnotherLibrary",
+                    path: packageFolder
+                ),
+            ],
+        ]
 
         return .init(
             externalDependencies: externalDependencies,
@@ -130,16 +122,15 @@ extension DependenciesGraph {
         packageFolder: AbsolutePath,
         platforms: Set<Platform>
     ) -> Self {
-        let externalDependencies: [Platform: [String: [TargetDependency]]] = platforms.reduce(into: [:]) { result, platform in
-            result[platform] = [
-                "Alamofire": [
-                    .project(
-                        target: self.resolveTargetName(targetName: "Alamofire", for: platform, addSuffix: platforms.count != 1),
-                        path: packageFolder
-                    ),
-                ],
-            ]
-        }
+        let externalDependencies = [
+            "Alamofire": [
+                TargetDependency.project(
+                    target: "Alamofire",
+                    path: packageFolder
+                ),
+            ],
+        ]
+
 
         return .init(
             externalDependencies: externalDependencies,
@@ -151,30 +142,21 @@ extension DependenciesGraph {
         packageFolder: AbsolutePath,
         platforms: Set<Platform>
     ) -> Self {
-        let externalDependencies: [Platform: [String: [TargetDependency]]] = platforms.reduce(into: [:]) { result, platform in
-            result[platform] = [
-                "GoogleAppMeasurement": [
-                    .project(
-                        target: self.resolveTargetName(
-                            targetName: "GoogleAppMeasurementTarget",
-                            for: platform,
-                            addSuffix: platforms.count != 1
-                        ),
-                        path: packageFolder
-                    ),
-                ],
-                "GoogleAppMeasurementWithoutAdIdSupport": [
-                    .project(
-                        target: self.resolveTargetName(
-                            targetName: "GoogleAppMeasurementWithoutAdIdSupportTarget",
-                            for: platform,
-                            addSuffix: platforms.count != 1
-                        ),
-                        path: packageFolder
-                    ),
-                ],
-            ]
-        }
+        let externalDependencies = [
+            "GoogleAppMeasurement": [
+                TargetDependency.project(
+                    target: "GoogleAppMeasurementTarget",
+                    path: packageFolder
+                ),
+            ],
+            "GoogleAppMeasurementWithoutAdIdSupport": [
+                TargetDependency.project(
+                    target: "GoogleAppMeasurementWithoutAdIdSupportTarget",
+                    path: packageFolder
+                ),
+            ],
+        ]
+
 
         return .init(
             externalDependencies: externalDependencies,
@@ -186,42 +168,33 @@ extension DependenciesGraph {
         packageFolder: AbsolutePath,
         platforms: Set<Platform>
     ) -> Self {
-        let externalDependencies: [Platform: [String: [TargetDependency]]] = platforms.reduce(into: [:]) { result, platform in
-            result[platform] = [
-                "GULAppDelegateSwizzler": [
-                    .project(
-                        target: self.resolveTargetName(
-                            targetName: "GULAppDelegateSwizzler",
-                            for: platform,
-                            addSuffix: platforms.count != 1
-                        ),
-                        path: packageFolder
-                    ),
-                ],
-                "GULMethodSwizzler": [
-                    .project(
-                        target: self.resolveTargetName(
-                            targetName: "GULMethodSwizzler",
-                            for: platform,
-                            addSuffix: platforms.count != 1
-                        ),
-                        path: packageFolder
-                    ),
-                ],
-                "GULNSData": [
-                    .project(
-                        target: self.resolveTargetName(targetName: "GULNSData", for: platform, addSuffix: platforms.count != 1),
-                        path: packageFolder
-                    ),
-                ],
-                "GULNetwork": [
-                    .project(
-                        target: self.resolveTargetName(targetName: "GULNetwork", for: platform, addSuffix: platforms.count != 1),
-                        path: packageFolder
-                    ),
-                ],
-            ]
-        }
+        let externalDependencies = [
+            "GULAppDelegateSwizzler": [
+                TargetDependency.project(
+                    target: "GULAppDelegateSwizzler",
+                    path: packageFolder
+                ),
+            ],
+            "GULMethodSwizzler": [
+                TargetDependency.project(
+                    target: "GULMethodSwizzler",
+                    path: packageFolder
+                ),
+            ],
+            "GULNSData": [
+                TargetDependency.project(
+                    target: "GULNSData",
+                    path: packageFolder
+                ),
+            ],
+            "GULNetwork": [
+                TargetDependency.project(
+                    target: "GULNetwork",
+                    path: packageFolder
+                ),
+            ],
+        ]
+        
 
         return .init(
             externalDependencies: externalDependencies,
@@ -233,16 +206,14 @@ extension DependenciesGraph {
         packageFolder: AbsolutePath,
         platforms: Set<Platform>
     ) -> Self {
-        let externalDependencies: [Platform: [String: [TargetDependency]]] = platforms.reduce(into: [:]) { result, platform in
-            result[platform] = [
-                "nanopb": [
-                    .project(
-                        target: self.resolveTargetName(targetName: "nanopb", for: platform, addSuffix: platforms.count != 1),
-                        path: packageFolder
-                    ),
-                ],
-            ]
-        }
+        let externalDependencies = [
+            "nanopb": [
+                TargetDependency.project(
+                    target: "nanopb",
+                    path: packageFolder
+                ),
+            ],
+        ]
 
         return .init(
             externalDependencies: externalDependencies,
@@ -251,10 +222,3 @@ extension DependenciesGraph {
     }
 }
 
-// MARK: - Helpers
-
-extension DependenciesGraph {
-    fileprivate static func resolveTargetName(targetName: String, for platform: Platform, addSuffix: Bool) -> String {
-        addSuffix ? "\(targetName)_\(platform.rawValue)" : targetName
-    }
-}

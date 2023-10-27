@@ -395,6 +395,7 @@ final class LinkGenerator: LinkGenerating { // swiftlint:disable:this type_body_
                 throw LinkGeneratorError.missingReference(path: path)
             }
             let buildFile = PBXBuildFile(file: fileRef)
+            buildFile.applyPlatformFilters(platformFilters, applicableTo: target)
             pbxproj.add(object: buildFile)
             buildPhase.files?.append(buildFile)
         }
@@ -548,11 +549,12 @@ final class LinkGenerator: LinkGenerating { // swiftlint:disable:this type_body_
 
         for dependency in dependencies.sorted() {
             switch dependency {
-            case let .xcframework(path: path, _, _, _, _):
+            case let .xcframework(path, _, _, _, platformFilters):
                 guard let fileRef = fileElements.file(path: path) else {
                     throw LinkGeneratorError.missingReference(path: path)
                 }
                 let buildFile = PBXBuildFile(file: fileRef)
+                buildFile.applyPlatformFilters(platformFilters, applicableTo: target)
                 pbxproj.add(object: buildFile)
                 files.append(buildFile)
             default:

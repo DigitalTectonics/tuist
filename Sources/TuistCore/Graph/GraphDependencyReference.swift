@@ -94,20 +94,20 @@ public enum GraphDependencyReference: Equatable, Comparable, Hashable {
     // Private helper type to auto-synthesize the hashable & comparable implementations
     // where only the required subset of properties are used.
     private enum Synthesized: Comparable, Hashable {
-        case sdk(path: AbsolutePath)
-        case product(target: String, productName: String)
+        case sdk(path: AbsolutePath, platformFilters: PlatformFilters)
+        case product(target: String, productName: String, platformFilters: PlatformFilters)
         case productWithPlatformFilters(target: String, productName: String, platformFilters: PlatformFilters)
-        case library(path: AbsolutePath)
-        case framework(path: AbsolutePath)
-        case xcframework(path: AbsolutePath)
-        case bundle(path: AbsolutePath)
+        case library(path: AbsolutePath, platformFilters: PlatformFilters)
+        case framework(path: AbsolutePath, platformFilters: PlatformFilters)
+        case xcframework(path: AbsolutePath, platformFilters: PlatformFilters)
+        case bundle(path: AbsolutePath, platformFilters: PlatformFilters)
 // TODO THIS IS BROKE
         init(dependencyReference: GraphDependencyReference) {
             switch dependencyReference {
-            case .xcframework(path: let path, _, _, _, _):
-                self = .xcframework(path: path)
-            case .library(path: let path, _, _, _, _):
-                self = .library(path: path)
+            case .xcframework(path: let path, _, _, _, let platformFilters):
+                self = .xcframework(path: path, platformFilters: platformFilters)
+            case .library(path: let path, _, _, _, let platformFilters):
+                self = .library(path: path, platformFilters: platformFilters)
             case .framework(
                 path: let path,
                 binaryPath: _,
@@ -117,19 +117,19 @@ public enum GraphDependencyReference: Equatable, Comparable, Hashable {
                 linking: _,
                 architectures: _,
                 product: _,
-                _
+                let platformFilters
             ):
-                self = .framework(path: path)
-            case let .bundle(path: path, _):
-                self = .bundle(path: path)
+                self = .framework(path: path, platformFilters: platformFilters)
+            case let .bundle(path: path, platformFilters):
+                self = .bundle(path: path, platformFilters: platformFilters)
             case let .product(target: target, productName: productName, platformFilters: platformFilters):
                 if !platformFilters.isEmpty {
                     self = .productWithPlatformFilters(target: target, productName: productName, platformFilters: platformFilters)
                 } else {
-                    self = .product(target: target, productName: productName)
+                    self = .product(target: target, productName: productName, platformFilters: platformFilters)
                 }
-            case .sdk(path: let path, status: _, source: _, _):
-                self = .sdk(path: path)
+            case .sdk(path: let path, status: _, source: _, platformFilters: let platformFilters):
+                self = .sdk(path: path, platformFilters: platformFilters)
             }
         }
     }

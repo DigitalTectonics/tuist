@@ -27,8 +27,12 @@ extension PBXFileElement {
     }
 }
 
+//import OSLog
+////let logger = Logger(subsystem: "", category: <#T##String#>)
+
 extension PBXBuildFile {
-    /// Apply platform filters either `platformFilter` or `platformFilters` depending on count
+    /// Apply platform filters to `platformFilters`
+    /// With Xcode 15, we're seeing `platformFilter` not have the effects we expect
     public func applyPlatformFilters(_ filters: PlatformFilters, applicableTo target: Target) {
         let dependingTargetPlatformFilters = target.dependencyPlatformFilters
 
@@ -48,11 +52,6 @@ extension PBXBuildFile {
     /// Apply platform filters either `platformFilter` or `platformFilters` depending on count
     public func applyPlatformFilters(_ filters: PlatformFilters) {
         guard !filters.isEmpty else { return }
-
-        if filters.count == 1, let filter = filters.first {
-            platformFilter = filter.xcodeprojValue
-        } else {
-            platformFilters = filters.xcodeprojValue
-        }
+        platformFilters = filters.xcodeprojValue
     }
 }

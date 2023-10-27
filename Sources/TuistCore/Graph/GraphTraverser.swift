@@ -295,7 +295,7 @@ public class GraphTraverser: GraphTraversing {
                     let dependencies = self.graph.dependencies[dependency, default: []]
                     return dependencies.compactMap { dependencyDependency -> GraphDependencyReference? in
                         guard case let GraphDependency.sdk(_, path, status, source) = dependencyDependency else { return nil }
-                        return .sdk(path: path, status: status, source: source, platformFilters: self.graph.edges[(targetGraphDependency, dependencyDependency)])
+                        return .sdk(path: path, status: status, source: source, platformFilters: platformFilters(from: targetGraphDependency, to: dependencyDependency))
                     }
                 }
             references.formUnion(transitiveSystemLibraries)
@@ -322,7 +322,7 @@ public class GraphTraverser: GraphTraversing {
         let directSystemLibrariesAndFrameworks = graph.dependencies[.target(name: name, path: path), default: []]
             .compactMap { dependency -> GraphDependencyReference? in
                 guard case let GraphDependency.sdk(_, path, status, source) = dependency else { return nil }
-                return .sdk(path: path, status: status, source: source, platformFilters: self.graph.edges[(targetGraphDependency, dependency)])
+                return .sdk(path: path, status: status, source: source, platformFilters: platformFilters(from: targetGraphDependency, to: dependency))
             }
         references.formUnion(directSystemLibrariesAndFrameworks)
 
@@ -595,6 +595,30 @@ public class GraphTraverser: GraphTraversing {
         return references
     }
 
+    func platformFilters(from rootDependency: GraphDependency, to transitiveDependency: GraphDependency) -> PlatformFilters {
+        var visited: Set<GraphDependency> = []
+
+        func find(from root: GraphDependency, to other: GraphDependency) -> PlatformFilters {
+            guard !visited.contains(root) else { return [] }
+            visited.insert(root)
+            guard let dependencies = graph.dependencies[root] else { return [] }
+
+            if dependencies.contains(other) {
+                return graph.edges[(root, other)]
+            } else {
+               let filters = dependencies.map { node in
+                   find(from: node, to: other)
+                }
+
+                return filters.reduce(Set<PlatformFilter>()) { result, otherFilters in
+                    result.union(otherFilters)
+                }
+            }
+        }
+
+        return find(from: rootDependency, to: transitiveDependency)
+    }
+
     func allDependenciesSatisfy(from rootDependency: GraphDependency, meets: (GraphDependency) -> Bool) -> Bool {
         var allSatisfy = true
         _ = filterDependencies(from: rootDependency, test: { dependency in
@@ -756,7 +780,8 @@ public class GraphTraverser: GraphTraversing {
     }
 
     func dependencyReference(to toDependency: GraphDependency, from fromDependency: GraphDependency) -> GraphDependencyReference? {
-        let platformFilters = self.graph.edges[(fromDependency, toDependency)]
+        var platformFilters = platformFilters(from: fromDependency, to: toDependency)
+
         switch toDependency {
         case let .framework(path, binaryPath, dsymPath, bcsymbolmapPaths, linking, architectures, isCarthage):
             return .framework(
@@ -794,7 +819,7 @@ public class GraphTraverser: GraphTraversing {
             return .product(
                 target: target.target.name,
                 productName: target.target.productNameWithExtension,
-                platformFilters: target.target.dependencyPlatformFilters // What to do here now that we have smart things?
+                platformFilters: platformFilters
             )
         case let .xcframework(path, infoPlist, primaryBinaryPath, _, _):
             return .xcframework(

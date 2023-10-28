@@ -21,6 +21,7 @@
         
         | Environment variable | Description | Required | Default | Example |
         | --- | --- | --- | --- | --- |
+        | `TUIST_CLOUD_SELF_HOSTED` | This indicates to the base Docker image that this a self-hosted variant of Tuist Cloud. You should set this to `true` | Yes | No | `yes` |
         | `DATABASE_URL` | The URL to access the Postgres database. Note that the URL should contain the authentication information | Yes | | `postgres://username:password@cloud.us-east-2.aws.test.com/production` |
         | `TUIST_APP_URL` | The base URL to access the instance from the Internet | Yes | | https://cloud.tuist.io |
         | `TUIST_SECRET_KEY_BASE` | The key to use to encrypt information (e.g. sessions in a cookie) | Yes | | | `c5786d9f869239cbddeca645575349a570ffebb332b64400c37256e1c9cb7ec831345d03dc0188edd129d09580d8cbf3ceaf17768e2048c037d9c31da5dcacfa` |
@@ -37,7 +38,12 @@
         
         #### GitHub
         
-        Authenticate using either a [GitHub App](https://docs.github.com/en/apps/creating-github-apps/about-creating-github-apps/about-creating-github-apps) or an [OAuth App](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app). Make sure to include all essential environment variables specified by GitHub in the Tuist Cloud environment. Absent variables will cause Tuist Cloud to overlook the GitHub authentication.
+        We recommend authenticating using a [GitHub App](https://docs.github.com/en/apps/creating-github-apps/about-creating-github-apps/about-creating-github-apps) but you can also use the [OAuth App](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app). Make sure to include all essential environment variables specified by GitHub in the Tuist Cloud environment. Absent variables will cause Tuist Cloud to overlook the GitHub authentication. To properly set up the GitHub app:
+        - In the GitHub app's general settings:
+            - Copy the `Client ID` and set it as `TUIST_GITHUB_OAUTH_ID`
+            - Create and copy a new `client secret` and set it as `TUIST_GITHUB_OAUTH_SECRET`
+            - Set the `Callback URL` as `http://YOUR_APP_URL/users/auth/github/callback`. `YOUR_APP_URL` can also be your server's IP address.
+        - In the `Permissions and events`'s `Account permissions` section, set the `Email addresses` permission to `Read-only`.
 
         | Environment variable | Description | Required | Default | Example |
         | --- | --- | --- | --- | --- |
